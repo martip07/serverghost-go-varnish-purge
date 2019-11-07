@@ -1,11 +1,19 @@
 language: go
 go:
 - 1.13.x
+os:
+  - linux
+  - windows
 before_install:
   - sudo apt-get update
 script:
   - go build -o varnish-purge main.go
+  - ls
 deploy:
   provider: releases
-  file: varnish-purge
+  api_key: $GITHUB_TOKEN
+  file: 
+    - "varnish-purge"
+    - "varnish-purge.exe"
+  skip_cleanup: true
   release_notes: "Primer build"
