@@ -6,6 +6,7 @@ import (
 	"procstrucs"
 
 	"gopkg.in/h2non/gentleman.v2"
+	"gopkg.in/h2non/gentleman.v2/plugins/headers"
 )
 
 func VarnishPurge(Options procstrucs.OptionsPurge) {
@@ -25,7 +26,9 @@ func VarnishPurge(Options procstrucs.OptionsPurge) {
 				req.Path("/" + Options.PathGroup[h])
 				req.Method("PURGE")
 				req.SetHeader("Host", Options.HostGroup[h])
-				req.SetHeader("X-Purge-Method", "regex")
+				req.Use(headers.Set("X-Purge-Method", "regex"))
+
+				fmt.Printf("Request: %s", req)
 
 				res, err := req.Send()
 				if err != nil {
@@ -37,8 +40,8 @@ func VarnishPurge(Options procstrucs.OptionsPurge) {
 					fmt.Printf("Invalid server response: %d\n", res.StatusCode)
 					return
 				}
-				fmt.Println("Request: %s", req.BodyString)
-				fmt.Println("Headers: %s", res.RawResponse)
+				fmt.Printf("Response: %s", res.String())
+				fmt.Println("Headers:", res.RawResponse)
 			}
 		}
 	}
