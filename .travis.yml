@@ -3,6 +3,7 @@ go:
 - 1.13.x
 os:
 - linux
+- windows
 script:
 - go build -o varnish-purge main.go
 - ls
@@ -12,7 +13,11 @@ deploy:
   file_glob: true
   file:
   - "varnish-purge"
+  - "varnish-purge.exe"
   skip_cleanup: true
+  on:
+    tags: true
+    branch: master
   release_notes: Primer build
 env:
   global:
