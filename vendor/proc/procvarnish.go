@@ -10,27 +10,36 @@ import (
 
 func VarnishPurge(Options procstrucs.OptionsPurge) {
 	fmt.Println(Options)
-	for i := 0; i < len(Options.HostGroup); i++ {
-		fmt.Println(Options.HostGroup[i])
-		cli := gentleman.New()
-		cli.URL("http://ec2-54-173-70-41.compute-1.amazonaws.com:8080")
-		req := cli.Request()
-		req.Path("/" + Options.HostGroup[i])
-		req.Method("PURGE")
-		req.SetHeader("Host", "dev.capital.pe")
-		req.SetHeader("X-Purge-Method", "regex")
+	for i, _ := range Options.PathGroup {
+		fmt.Println("PATHS ===")
+		fmt.Println(Options.PathGroup[i])
+		for e, _ := range Options.VarnishGroup {
+			fmt.Println("VARNISH ===")
+			fmt.Println(Options.VarnishGroup[e])
+			for h, _ := range Options.HostGroup {
+				fmt.Println("HOST ===")
+				fmt.Println(Options.HostGroup[h])
+				cli := gentleman.New()
+				cli.URL(Options.VarnishGroup[h])
+				req := cli.Request()
+				req.Path("/" + Options.PathGroup[h])
+				req.Method("PURGE")
+				req.SetHeader("Host", Options.HostGroup[h])
+				req.SetHeader("X-Purge-Method", "regex")
 
-		res, err := req.Send()
-		if err != nil {
-			fmt.Printf("Request error: %s\n", err)
-			return
-		}
+				res, err := req.Send()
+				if err != nil {
+					fmt.Printf("Request error: %s\n", err)
+					return
+				}
 
-		if !res.Ok {
-			fmt.Printf("Invalid server response: %d\n", res.StatusCode)
-			return
+				if !res.Ok {
+					fmt.Printf("Invalid server response: %d\n", res.StatusCode)
+					return
+				}
+				fmt.Println("Request: %s", req.BodyString)
+				fmt.Println("Headers: %s", res.RawResponse)
+			}
 		}
-		fmt.Sprintln("Request: %s", req.Body)
-		fmt.Println("Body: %s", res.Header)
 	}
 }
