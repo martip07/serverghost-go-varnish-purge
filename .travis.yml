@@ -6,7 +6,6 @@ os:
 - windows
 script:
 - go build -o varnish-purge main.go
-- ls
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
