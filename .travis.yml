@@ -6,18 +6,17 @@ os:
 - windows
 script:
 - go build -o varnish-purge main.go
+before_deploy:
+  - mv varnish-purge "go-varnish-purge-$TRAVIS_TAG-$TRAVIS_OS_NAME"
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file_glob: true
-  file:
-  - "varnish-purge"
-  - "varnish-purge.exe"
+  file: go-varnish-purge-*
   skip_cleanup: true
-  on:
-    tags: true
-    branch: master
-  release_notes: Primer build
+  tag_name: "v0.0.4"
+  name: "Windows Build first release"
+  prerelease: true
 env:
   global:
     secure: "pSwqPNK9zrMyCa/QhvP2O/GBBFn90EmY4N8pGrmLQ1hWN106YYPFGv4x/d5TVDGP+VHLm464n1YJWW/yzl5XMb2rTg/yEwCDEG21uJki7jvIhiiEma58GpdXodF8Z8doUjuPWSe6fZx1Jy52jWWV7b9nfnYxIgI7upw1861ThfHs4c+QNxgYtTcwm/U2nrihuy/NS9vxAl4wtYYmiWwiGp5XLHYXqfPy0aDuB3IZxIDOz6b+326V0QwsCojD3gxJiguiJz8qOM4ZeJTlc8eWId+6YaK/T243MI7BtM6R5W/DBbOMs1pTgZzr57riPRUF2GxM+jq2gl7yWD3CJsmqQdB3jrkZYdU8DZEVCTCI9VrYm2vIuK/V4eroBkvJRYE5WmyPHmd3UwVzD6RxHh3snVlQYQ2FIfueY8Cg/SREdcPB7zOBPIUu2m+vupsWQHg7tfqStDw3waN+BJIg1yjqnmHUXvhQ+T8QBPzhi5LKCnqTXVrEY+ugpiVp0MYEH72vg9HBlhuqDKA8OOG0t080N3XF/a6pp5k1HkJNP4YNkiD6tNN3vswRiph9Yi6OQDkJD+ezZn6SvSekLFqtJ5f9x6gDkQr6pwcKiym0s4mji11EsESAB/6exK0mdQlLRMK0FKQ/fSh5jAxkRkaroWI/5XHCrT2bx1LNYyNnH4sqox0="
