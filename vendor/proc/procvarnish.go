@@ -2,9 +2,11 @@ package proc
 
 import (
 	"fmt"
+	"os"
 
 	"procstrucs"
 
+	logger "github.com/izumin5210/gentleman-logger"
 	"gopkg.in/h2non/gentleman.v2"
 	"gopkg.in/h2non/gentleman.v2/plugins/headers"
 )
@@ -21,16 +23,23 @@ func VarnishPurge(Options procstrucs.OptionsPurge) {
 				fmt.Println("HOST ===")
 				fmt.Println(Options.HostGroup[h])
 				cli := gentleman.New()
-				cli.URL(Options.VarnishGroup[h])
-				req := cli.Request()
-				req.Path("/" + Options.PathGroup[h])
-				req.Method("PURGE")
-				req.SetHeader("Host", Options.HostGroup[h])
-				req.Use(headers.Set("X-Purge-Method", "regex"))
+				// cli.URL(Options.VarnishGroup[h])
+				// req := cli.Request()
+				cli.Path(Options.PathGroup[i])
+				// req.Path(Options.PathGroup[h])
+				cli.Method("PURGE")
+				// req.Method("PURGE")
+				// cli.SetHeader("Host", Options.HostGroup[h])
+				// req.SetHeader("Host", Options.HostGroup[h])
+				cli.Use(headers.Set("Host", Options.HostGroup[h]))
+				cli.Use(headers.Set("X-Purge-Method", "regex"))
+				//req.Use(headers.Set("X-Purge-Method", "regex"))
+				cli.Use(logger.New(os.Stdout))
+				// req.Use(logger.New(os.Stdout))
+				cli.Use(headers.Del("User-Agent"))
 
-				fmt.Printf("Request: %s", req)
-
-				res, err := req.Send()
+				res, err := cli.Request().BaseURL(Options.VarnishGroup[e]).Send()
+				// res, err := req.Send()
 				if err != nil {
 					fmt.Printf("Request error: %s\n", err)
 					return
@@ -40,8 +49,8 @@ func VarnishPurge(Options procstrucs.OptionsPurge) {
 					fmt.Printf("Invalid server response: %d\n", res.StatusCode)
 					return
 				}
-				fmt.Printf("Response: %s", res.String())
-				fmt.Println("Headers:", res.RawResponse)
+				fmt.Printf("Status: %d\n", res.StatusCode)
+				fmt.Printf("Body: %s", res.String())
 			}
 		}
 	}
