@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	purgeProc "proc"
 	purgeOptions "procstrucs"
+	purgeProc "procvarnish"
 )
 
 func main() {
